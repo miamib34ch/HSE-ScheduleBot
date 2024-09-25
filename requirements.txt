@@ -1,0 +1,7 @@
+python-telegram-bot
+beautifulsoup4
+pytz
+pandas
+requests
+xlrd
+openpyxl

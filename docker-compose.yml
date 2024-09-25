@@ -1,0 +1,9 @@
+version: '3.8'
+
+services:
+  schedule_bot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: schedule_bot_image
+    restart: always
