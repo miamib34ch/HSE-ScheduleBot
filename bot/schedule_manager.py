@@ -207,8 +207,7 @@ def get_schedule_for_all_days(df):
 
         day_name_russian = DAYS_TRANSLATION.get(day, day).capitalize()
 
-        message = f"<b>Расписание на {day_name_russian}</b>\n\n"
-        message += "\n\n".join(schedule_info)
+        message = "\n\n".join(schedule_info)
 
         week_schedule[day_name_russian] = message
 

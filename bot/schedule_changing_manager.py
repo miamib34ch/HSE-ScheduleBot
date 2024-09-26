@@ -34,11 +34,26 @@ async def check_for_updates():
     """
     Функция для проверки обновлений по ссылке каждый час.
     """
-    last_hash = None
     old_schedules = {}
+    last_hash = None
+    last_reset_date = None
+
+    week_type_translation = {
+        'current': 'текущую',
+        'next': 'следующую'
+    }
 
     while True:
         try:
+            current_date = get_current_date().date()
+            is_new_week = current_date.weekday() == 0 # понедельник
+
+            if is_new_week and last_reset_date != current_date:
+                logging.info("Новая неделя началась.")
+                old_schedules = {}
+                last_hash = None
+                last_reset_date = current_date
+
             schedule_url = get_schedule_link()
             if not schedule_url:
                 await asyncio.sleep(SCHEDULE_CHANGING_UPDATE_SECONDS)
@@ -75,9 +90,10 @@ async def check_for_updates():
                     if old_schedule is not None:
                         changes = compare_schedules(old_schedule, new_schedule)
                         if changes:
+                            message = f"<b>Обновления в расписании на {week_type_translation.get(week_type, week_type)} неделю:</b>\n\n"
                             for day, schedule in changes.items():
-                                message = f"Обновления на {day.capitalize()} ({week_type} неделя):\n\n{schedule}"
-                                await send_to_telegram(message)
+                                message += f"<b><u>{day.capitalize()}</u></b>:\n{schedule}\n\n"
+                            await send_to_telegram(message)
 
                     old_schedules[week_type] = new_schedule
 
