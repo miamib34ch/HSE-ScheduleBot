@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 import pytz
 
-from config import TIMEZONE
+from .config import TIMEZONE
 
 
 TZ = pytz.timezone(TIMEZONE)
