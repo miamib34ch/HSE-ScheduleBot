@@ -24,4 +24,4 @@ jobs:
 
       - name: Run unittests
         run: |
-          PYTHONPATH=. python -m unittest discover -s bot/tests
+          PYTHONPATH=bot python -m unittest discover -s bot/tests
