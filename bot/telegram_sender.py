@@ -1,5 +1,5 @@
 from telegram import Bot
-from .config import TELEGRAM_TOKEN, TELEGRAM_CHANNEL
+from config import TELEGRAM_TOKEN, TELEGRAM_CHANNEL
 
 
 async def send_to_telegram(message):

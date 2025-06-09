@@ -1,7 +1,7 @@
 import asyncio
 
-from .schedule_manager import schedule_notifier
-from .schedule_changing_manager import check_for_updates
+from schedule_manager import schedule_notifier
+from schedule_changing_manager import check_for_updates
 
 
 async def main():

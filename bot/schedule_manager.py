@@ -8,9 +8,9 @@ import logging
 from datetime import datetime, timedelta
 from urllib.parse import urlparse, urljoin
 
-from .telegram_sender import send_to_telegram
-from .config import HOST, TIMETABLE_ENDPOINT, SCHEDULE_FILENAME_PATTERN, GROUP_NAME, SENDING_HOUR, SENDING_MINUTES
-from .time_manager import TZ, DAYS_TRANSLATION, get_next_day_date, get_current_date
+from telegram_sender import send_to_telegram
+from config import HOST, TIMETABLE_ENDPOINT, SCHEDULE_FILENAME_PATTERN, GROUP_NAME, SENDING_HOUR, SENDING_MINUTES
+from time_manager import TZ, DAYS_TRANSLATION, get_next_day_date, get_current_date
 
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')

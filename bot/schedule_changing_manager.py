@@ -4,10 +4,10 @@ import pandas as pd
 import hashlib
 
 
-from .schedule_manager import load_xls_file, get_schedule_link, find_week_sheet, get_schedule_for_all_days
-from .time_manager import get_next_week_date, get_current_date
-from .config import SCHEDULE_CHANGING_UPDATE_SECONDS
-from .telegram_sender import send_to_telegram
+from schedule_manager import load_xls_file, get_schedule_link, find_week_sheet, get_schedule_for_all_days
+from time_manager import get_next_week_date, get_current_date
+from config import SCHEDULE_CHANGING_UPDATE_SECONDS
+from telegram_sender import send_to_telegram
 
 
 def get_hash(content):
