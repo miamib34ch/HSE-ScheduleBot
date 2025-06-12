@@ -34,12 +34,9 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-
-      - name: Docker Compose Remote Deployment
-        uses: astappiev/docker-compose-remote-action@master
+      - uses: masterjanic/docker-compose-ssh-deployment@master
+        name: Docker-Compose Remote Deployment
         with:
           ssh_host: ${{ secrets.SSH_HOST }}
-          ssh_user: ${{ secrets.SSH_USER }}
           ssh_private_key: ${{ secrets.SSH_KEY }}
-          docker_compose_prefix: hsebot
-          docker_args: up -d --build
+          ssh_user: ${{ secrets.SSH_USER }}
