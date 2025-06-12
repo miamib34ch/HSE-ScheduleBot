@@ -52,7 +52,7 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_KEY }}
           source: schedule_bot_image.tar.gz
-          target: /home/${{ secrets.SSH_USER }}/schedule_bot_image.tar.gz
+          target: /home/${{ secrets.SSH_USER }}/
 
       - name: Load image and deploy via SSH
         uses: appleboy/ssh-action@v1.0.0
@@ -61,7 +61,6 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_KEY }}
           script: |
+            cd ~
             gunzip -c schedule_bot_image.tar.gz | docker load
-            cd HSE-ScheduleBot
-            git pull origin master
             docker compose up -d --force-recreate
