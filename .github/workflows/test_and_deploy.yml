@@ -33,19 +33,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Deploy via SSH
-        uses: appleboy/ssh-action@v1.0.0
+      - uses: actions/checkout@v3
+
+      - name: Docker Compose Remote Deployment
+        uses: astappiev/docker-compose-remote-action@master
         with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
-          key: ${{ secrets.SSH_KEY }}
-          script: |
-            mkdir -p /home/deploy/HSE-ScheduleBot
-            cd /home/deploy/HSE-ScheduleBot
-            if [ ! -d .git ]; then
-              git clone https://github.com/${{ github.repository }} .
-            else
-              git pull origin master
-            fi
-            docker compose down
-            docker compose up -d --build
+          ssh_host: ${{ secrets.SSH_HOST }}
+          ssh_user: ${{ secrets.SSH_USER }}
+          ssh_private_key: ${{ secrets.SSH_KEY }}
+          docker_compose_prefix: hsebot
+          docker_args: up -d --build
