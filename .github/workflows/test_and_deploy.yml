@@ -38,7 +38,7 @@ jobs:
       - name: Docker Compose Remote Deployment
         uses: astappiev/docker-compose-remote-action@master
         with:
-          ssh_host: 176.98.178.138
+          ssh_host: ${{ secrets.SSH_HOST }}
           ssh_user: deploy
           ssh_private_key: ${{ secrets.SSH_KEY }}
           docker_compose_prefix: hsebot
