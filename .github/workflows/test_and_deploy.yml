@@ -39,6 +39,6 @@ jobs:
         with:
           ssh_host: ${{ secrets.SSH_HOST }}
           ssh_user: ${{ secrets.SSH_USER }}
-          ssh_key: ${{ secrets.SSH_PRIVATE_KEY }}
+          ssh_key: ${{ secrets.SSH_KEY }}
           build: true
           compose_file: docker-compose.yml
