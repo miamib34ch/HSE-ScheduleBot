@@ -36,41 +36,32 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Set up Docker CLI
+      - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
-      - name: Deploy via SSH with docker context
-        env:
-          INPUT_SSH_KEY: ${{ secrets.SSH_KEY }}
-          INPUT_SSH_USER: ${{ secrets.SSH_USER }}
-          INPUT_SSH_HOST: ${{ secrets.SSH_HOST }}
-          INPUT_SSH_PORT: '22'
-          INPUT_BUILD: 'true'
-          INPUT_FORCE_RECREATE: 'true'
-          INPUT_COMPOSE_FILE: 'docker-compose.yml'
-        run: |
-          if [ "$INPUT_BUILD" = 'true' ]; then
-            BUILD_FLAG='--build'
-          else
-            BUILD_FLAG=''
-          fi
+      - name: Build Docker image
+        run: docker build -t schedule_bot_image .
 
-          if [ "$INPUT_FORCE_RECREATE" = 'true' ]; then
-            FORCE_RECREATE_FLAG='--force-recreate'
-          else
-            FORCE_RECREATE_FLAG=''
-          fi
+      - name: Save Docker image to archive
+        run: docker save schedule_bot_image | gzip > schedule_bot_image.tar.gz
 
-          mkdir -p $HOME/.ssh
-          printf '%s\n' "$INPUT_SSH_KEY" > "$HOME/.ssh/private_key"
-          chmod 600 "$HOME/.ssh/private_key"
-          eval "$(ssh-agent -s)"
-          ssh-add "$HOME/.ssh/private_key"
+      - name: Copy image to server
+        uses: appleboy/scp-action@v0.1.4
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          source: schedule_bot_image.tar.gz
+          target: /home/${{ secrets.SSH_USER }}/schedule_bot_image.tar.gz
 
-          docker context create remote --docker "host=ssh://$INPUT_SSH_USER@$INPUT_SSH_HOST:$INPUT_SSH_PORT" || true
-          docker context use remote
-
-          docker compose -f "$INPUT_COMPOSE_FILE" up -d $BUILD_FLAG $FORCE_RECREATE_FLAG $INPUT_OPTIONS $INPUT_SERVICE
-
-          docker context use default
-          docker context rm remote || true
+      - name: Load image and deploy via SSH
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          script: |
+            gunzip -c schedule_bot_image.tar.gz | docker load
+            cd HSE-ScheduleBot
+            git pull origin master
+            docker compose up -d --force-recreate
