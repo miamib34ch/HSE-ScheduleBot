@@ -39,7 +39,7 @@ jobs:
         uses: astappiev/docker-compose-remote-action@master
         with:
           ssh_host: ${{ secrets.SSH_HOST }}
-          ssh_user: deploy
+          ssh_user: ${{ secrets.SSH_USER }}
           ssh_private_key: ${{ secrets.SSH_KEY }}
           docker_compose_prefix: hsebot
           docker_args: up -d --build
