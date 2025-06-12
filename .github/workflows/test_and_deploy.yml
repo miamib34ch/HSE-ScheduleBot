@@ -34,11 +34,11 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-      - uses: astappiev/docker-compose-remote-action@master
+      - uses: chaplyk/docker-compose-remote-action@v1.1
         name: Docker Compose Remote Deployment
         with:
           ssh_host: ${{ secrets.SSH_HOST }}
           ssh_user: ${{ secrets.SSH_USER }}
-          ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }}
-          docker_compose_prefix: myapp
-          docker_args: '-d --force-recreate --build'
+          ssh_key: ${{ secrets.SSH_PRIVATE_KEY }}
+          build: true
+          compose_file: docker-compose.yml
