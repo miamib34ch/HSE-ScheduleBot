@@ -36,44 +36,28 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
+      - name: Archive project files
+        run: |
+          tar czf project.tar.gz .
 
-      - name: Build Docker image
-        run: docker build -t schedule_bot_image .
-
-      - name: Save Docker image to archive
-        run: docker save schedule_bot_image | gzip > schedule_bot_image.tar.gz
-
-      - name: Clean up old files on server before upload
-        uses: appleboy/ssh-action@v1.0.0
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
-          key: ${{ secrets.SSH_KEY }}
-          script: |
-            cd ~
-            rm -f schedule_bot_image.tar.gz
-            rm -rf schedule-bot
-
-      - name: Copy image to server
+      - name: Copy archive to server
         uses: appleboy/scp-action@v0.1.4
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_KEY }}
-          source: schedule_bot_image.tar.gz
+          source: project.tar.gz
           target: /home/${{ secrets.SSH_USER }}/
 
-      - name: Load image and deploy via SSH
+      - name: Unpack and run on server
         uses: appleboy/ssh-action@v1.0.0
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_KEY }}
           script: |
+            rm -rf ~/schedule-bot
             mkdir -p ~/schedule-bot
-            mv ~/schedule_bot_image.tar.gz ~/schedule-bot/
+            tar xzf ~/project.tar.gz -C ~/schedule-bot
             cd ~/schedule-bot
-            gunzip -c schedule_bot_image.tar.gz | docker load
             docker compose up -d --force-recreate
