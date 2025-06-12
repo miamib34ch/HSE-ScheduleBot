@@ -45,6 +45,17 @@ jobs:
       - name: Save Docker image to archive
         run: docker save schedule_bot_image | gzip > schedule_bot_image.tar.gz
 
+      - name: Clean up old files on server before upload
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          script: |
+            cd ~
+            rm -f schedule_bot_image.tar.gz
+            rm -rf schedule-bot
+
       - name: Copy image to server
         uses: appleboy/scp-action@v0.1.4
         with:
@@ -61,6 +72,8 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_KEY }}
           script: |
-            cd ~
+            mkdir -p ~/schedule-bot
+            mv ~/schedule_bot_image.tar.gz ~/schedule-bot/
+            cd ~/schedule-bot
             gunzip -c schedule_bot_image.tar.gz | docker load
             docker compose up -d --force-recreate
