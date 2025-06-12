@@ -36,20 +36,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Archive project files
-        run: |
-          tar --exclude=project.tar.gz -czf project.tar.gz .
-
-      - name: Copy archive to server
-        uses: appleboy/scp-action@v0.1.4
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
-          key: ${{ secrets.SSH_KEY }}
-          source: project.tar.gz
-          target: /home/${{ secrets.SSH_USER }}/
-
-      - name: Unpack and run on server
+      - name: Clean up project folder on server before upload
         uses: appleboy/ssh-action@v1.0.0
         with:
           host: ${{ secrets.SSH_HOST }}
@@ -57,7 +44,22 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           script: |
             rm -rf ~/schedule-bot
-            mkdir -p ~/schedule-bot
-            tar xzf ~/project.tar.gz -C ~/schedule-bot
+
+      - name: Copy project files to server
+        uses: appleboy/scp-action@v0.1.4
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          source: ./
+          target: /home/${{ secrets.SSH_USER }}/schedule-bot/
+
+      - name: Run docker compose on server
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          script: |
             cd ~/schedule-bot
             docker compose up -d --force-recreate
