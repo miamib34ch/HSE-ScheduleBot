@@ -29,6 +29,7 @@ jobs:
           PYTHONPATH=bot python -m unittest discover -s bot/tests
 
   deploy:
+    if: github.ref == 'refs/heads/master' && github.event_name == 'push'
     needs: test
     runs-on: ubuntu-latest
 
